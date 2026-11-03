@@ -1,0 +1,7 @@
+.env
+.env.*
+!.env.example
+.output
+dist
+node_modules
+.tanstack
