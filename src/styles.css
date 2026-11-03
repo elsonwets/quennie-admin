@@ -1,0 +1,126 @@
+@import "tailwindcss";
+
+/* Same linen / walnut / ivory identity as the public Quennie site. */
+@theme {
+  --color-linho: #efe8df;
+  --color-linho-deep: #e4dacd;
+  --color-marfim: #faf7f2;
+  --color-cognac: #9a5934;
+  --color-cognac-deep: #7d4526;
+  --color-nogueira: #2a1e17;
+  --color-taupe: #8a7a6c;
+  --color-palma: #4a5240;
+  --color-palma-deep: #363c2f;
+  --color-linha: #e9e1d6;
+
+  --font-display: "Cormorant Garamond", "Times New Roman", serif;
+  --font-sans: "Jost", system-ui, sans-serif;
+
+  --ease-drape: cubic-bezier(0.65, 0, 0.18, 1);
+
+  --shadow-card: 0 1px 2px rgb(42 30 23 / 0.04), 0 8px 24px -12px rgb(42 30 23 / 0.12);
+  --shadow-shell: 0 30px 80px -40px rgb(42 30 23 / 0.35), 0 2px 6px rgb(42 30 23 / 0.04);
+}
+
+@layer base {
+  html {
+    -webkit-tap-highlight-color: transparent;
+    overscroll-behavior-y: none;
+    color: var(--color-nogueira);
+    font-family: var(--font-sans);
+    font-weight: 350;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  body {
+    min-height: 100dvh;
+    background:
+      radial-gradient(1200px 600px at 0% 0%, #f3ecd9 0%, transparent 60%),
+      radial-gradient(900px 700px at 100% 100%, #dfe2d6 0%, transparent 55%),
+      var(--color-linho);
+  }
+
+  ::selection {
+    background: var(--color-cognac);
+    color: var(--color-linho);
+  }
+
+  :focus-visible {
+    outline: 1.5px solid var(--color-cognac);
+    outline-offset: 2px;
+  }
+
+  button {
+    cursor: pointer;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+}
+
+@utility display {
+  font-family: var(--font-display);
+  font-weight: 400;
+  letter-spacing: -0.01em;
+  line-height: 1;
+}
+
+@utility eyebrow {
+  font-size: 0.68rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--color-taupe);
+}
+
+@utility tabular {
+  /* Lining figures: Cormorant defaults to old-style numerals, which wobble in amounts. */
+  font-variant-numeric: lining-nums tabular-nums;
+}
+
+@utility scrollbar-none {
+  scrollbar-width: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+@utility field {
+  width: 100%;
+  min-width: 0;
+  border-radius: 0.75rem;
+  border: 1px solid var(--color-linha);
+  background: white;
+  padding: 0.6rem 0.85rem;
+  font-size: 0.9rem;
+  color: var(--color-nogueira);
+  transition: border-color 150ms, box-shadow 150ms;
+  &::placeholder {
+    color: color-mix(in oklab, var(--color-taupe) 70%, white);
+  }
+  &:focus {
+    outline: none;
+    border-color: var(--color-cognac);
+    box-shadow: 0 0 0 3px rgb(154 89 52 / 0.12);
+  }
+}
+
+/* Page-load entrance in pure CSS so it plays from the server-rendered HTML,
+   without waiting for hydration. Stagger with style={{ '--i': n }}. */
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+}
+
+@utility rise {
+  animation: rise 0.7s var(--ease-drape) both;
+  animation-delay: calc(0.05s + var(--i, 0) * 0.08s);
+}

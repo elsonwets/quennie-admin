@@ -1,0 +1,11 @@
+node_modules
+.output
+.tanstack
+dist
+
+# Local secrets (Supabase keys)
+.env
+.env.*
+!.env.example
+.output
+.vercel
