@@ -1,13 +1,14 @@
 import { useState } from 'react'
 import { Link, createFileRoute, useNavigate } from '@tanstack/react-router'
 import { AnimatePresence, motion } from 'motion/react'
-import { ArrowRight, CalendarDays, Check, FolderOpen, Lock, MapPin, Pencil, Phone, Plus, Trash2 } from 'lucide-react'
+import { ArrowRight, CalendarDays, Camera, Check, FolderOpen, Lock, MapPin, Pencil, Phone, Plus, Trash2 } from 'lucide-react'
 import { daysBetween, money, projectFee, shortDate, todayIso } from '~/lib/format'
 import { validateIdSearch } from '~/lib/search'
 import { KICKOFF_STEPS, PROJECT_PHASES, type Project, type ProjectPhase } from '~/lib/types'
 import { useMutations, useWorkspace } from '~/lib/workspace'
 import { Badge, Button, ConfirmDelete, DetailPanel, EmptyState, IconButton, PageHeader, PaletteStrip, Progress, Spec, Tabs, cx } from '~/components/ui'
 import { ProjectForm } from '~/components/ProjectForm'
+import { ProjectGallery } from '~/components/ProjectGallery'
 import { phaseTone } from '~/lib/tones'
 
 export const Route = createFileRoute('/projetos')({
@@ -78,6 +79,11 @@ function ProjectsPage() {
                           {project.phase}
                         </Badge>
                         <span className="tabular absolute right-3 bottom-3 text-[0.78rem] text-white/95">{project.progress}%</span>
+                        {(project.photos?.length ?? 0) > 0 && (
+                          <span className="tabular absolute bottom-3 left-3 flex items-center gap-1 text-[0.74rem] text-white/95">
+                            <Camera className="size-3.5" /> {project.photos?.length}
+                          </span>
+                        )}
                       </div>
                       <div className="px-2 pt-3.5 pb-2">
                         <p className="display text-[1.35rem]">{project.name}</p>
@@ -187,6 +193,8 @@ function ProjectDetail({ project, onEdit, onDelete, onAdvance }: { project: Proj
         )}
 
         {project.description && <p className="mt-3 text-[0.84rem] leading-relaxed text-nogueira/80">{project.description}</p>}
+
+        <ProjectGallery project={project} />
 
         {project.hardDeadline !== undefined && (
           <p className="mt-3 flex items-start gap-2 rounded-xl bg-[#f8e3dd]/60 px-3 py-2 text-[0.8rem] text-[#9b3424]">

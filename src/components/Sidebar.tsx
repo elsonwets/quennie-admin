@@ -1,16 +1,18 @@
 import { useEffect, useRef } from 'react'
 import { Link } from '@tanstack/react-router'
 import { motion } from 'motion/react'
-import { CalendarDays, FolderOpen, Home, Lamp, LogOut, Palette, ReceiptText, Users } from 'lucide-react'
+import { CalendarDays, FolderOpen, Home, Inbox, Lamp, LogOut, Megaphone, Palette, ReceiptText, Users } from 'lucide-react'
 import { useWorkspace } from '~/lib/workspace'
 import { useSignOut } from '~/lib/useSignOut'
 import { Avatar, cx } from './ui'
 
 const nav = [
   { to: '/', label: 'Início', icon: Home },
+  { to: '/pedidos', label: 'Pedidos', icon: Inbox },
   { to: '/projetos', label: 'Projetos', icon: FolderOpen },
   { to: '/inspiracoes', label: 'Inspirações', icon: Palette },
   { to: '/clientes', label: 'Clientes', icon: Users },
+  { to: '/marketing', label: 'Marketing', icon: Megaphone },
   { to: '/biblioteca', label: 'Biblioteca', icon: Lamp },
   { to: '/agenda', label: 'Agenda', icon: CalendarDays },
   { to: '/faturas', label: 'Faturas', icon: ReceiptText },
@@ -36,7 +38,8 @@ export function Wordmark({ centered }: { centered?: boolean }) {
 
 /** Logo and profile stay put; only the navigation between them scrolls on short screens. */
 function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
-  const { projects, clients } = useWorkspace()
+  const { projects, clients, leads } = useWorkspace()
+  const fresh = leads.filter((l) => l.status === 'Novo').length
   const signOut = useSignOut()
   const rootRef = useRef<HTMLDivElement>(null)
   const scrollRef = useRef<HTMLDivElement>(null)
@@ -86,6 +89,7 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
                       )}
                       <Icon className={cx('relative size-[1.1rem]', isActive ? 'text-nogueira' : 'text-taupe group-hover:text-nogueira')} strokeWidth={1.6} />
                       <span className={cx('relative', isActive && 'text-nogueira')}>{label}</span>
+                      {to === '/pedidos' && fresh > 0 && <span className="tabular relative ml-auto grid h-5 min-w-5 place-items-center rounded-full bg-cognac px-1.5 text-[0.68rem] text-marfim">{fresh}</span>}
                     </>
                   )}
                 </Link>

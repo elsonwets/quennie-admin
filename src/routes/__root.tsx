@@ -9,7 +9,7 @@ import { getCurrentUser } from '~/server/auth'
 import { LOGIN_PATH, forgetUser, isSessionError, rememberUser, rememberedUser } from '~/lib/session'
 import type { Workspace } from '~/lib/types'
 
-const EMPTY: Workspace = { clients: [], projects: [], products: [], invoices: [], appointments: [], inspirations: [] }
+const EMPTY: Workspace = { clients: [], projects: [], products: [], invoices: [], appointments: [], inspirations: [], leads: [], templates: [], outreach: [], posts: [] }
 
 export const Route = createRootRoute({
   head: () => ({

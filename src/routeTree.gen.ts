@@ -16,6 +16,8 @@ import { Route as ClientesRouteImport } from './routes/clientes'
 import { Route as EntrarRouteImport } from './routes/entrar'
 import { Route as FaturasRouteImport } from './routes/faturas'
 import { Route as InspiracoesRouteImport } from './routes/inspiracoes'
+import { Route as MarketingRouteImport } from './routes/marketing'
+import { Route as PedidosRouteImport } from './routes/pedidos'
 import { Route as ProjetosRouteImport } from './routes/projetos'
 
 const IndexRoute = IndexRouteImport.update({
@@ -53,6 +55,16 @@ const InspiracoesRoute = InspiracoesRouteImport.update({
   path: '/inspiracoes',
   getParentRoute: () => rootRouteImport,
 } as any)
+const MarketingRoute = MarketingRouteImport.update({
+  id: '/marketing',
+  path: '/marketing',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PedidosRoute = PedidosRouteImport.update({
+  id: '/pedidos',
+  path: '/pedidos',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ProjetosRoute = ProjetosRouteImport.update({
   id: '/projetos',
   path: '/projetos',
@@ -67,6 +79,8 @@ export interface FileRoutesByFullPath {
   '/entrar': typeof EntrarRoute
   '/faturas': typeof FaturasRoute
   '/inspiracoes': typeof InspiracoesRoute
+  '/marketing': typeof MarketingRoute
+  '/pedidos': typeof PedidosRoute
   '/projetos': typeof ProjetosRoute
 }
 export interface FileRoutesByTo {
@@ -77,6 +91,8 @@ export interface FileRoutesByTo {
   '/entrar': typeof EntrarRoute
   '/faturas': typeof FaturasRoute
   '/inspiracoes': typeof InspiracoesRoute
+  '/marketing': typeof MarketingRoute
+  '/pedidos': typeof PedidosRoute
   '/projetos': typeof ProjetosRoute
 }
 export interface FileRoutesById {
@@ -88,6 +104,8 @@ export interface FileRoutesById {
   '/entrar': typeof EntrarRoute
   '/faturas': typeof FaturasRoute
   '/inspiracoes': typeof InspiracoesRoute
+  '/marketing': typeof MarketingRoute
+  '/pedidos': typeof PedidosRoute
   '/projetos': typeof ProjetosRoute
 }
 export interface FileRouteTypes {
@@ -100,6 +118,8 @@ export interface FileRouteTypes {
     | '/entrar'
     | '/faturas'
     | '/inspiracoes'
+    | '/marketing'
+    | '/pedidos'
     | '/projetos'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -110,6 +130,8 @@ export interface FileRouteTypes {
     | '/entrar'
     | '/faturas'
     | '/inspiracoes'
+    | '/marketing'
+    | '/pedidos'
     | '/projetos'
   id:
     | '__root__'
@@ -120,6 +142,8 @@ export interface FileRouteTypes {
     | '/entrar'
     | '/faturas'
     | '/inspiracoes'
+    | '/marketing'
+    | '/pedidos'
     | '/projetos'
   fileRoutesById: FileRoutesById
 }
@@ -131,6 +155,8 @@ export interface RootRouteChildren {
   EntrarRoute: typeof EntrarRoute
   FaturasRoute: typeof FaturasRoute
   InspiracoesRoute: typeof InspiracoesRoute
+  MarketingRoute: typeof MarketingRoute
+  PedidosRoute: typeof PedidosRoute
   ProjetosRoute: typeof ProjetosRoute
 }
 
@@ -185,6 +211,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof InspiracoesRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/marketing': {
+      id: '/marketing'
+      path: '/marketing'
+      fullPath: '/marketing'
+      preLoaderRoute: typeof MarketingRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/pedidos': {
+      id: '/pedidos'
+      path: '/pedidos'
+      fullPath: '/pedidos'
+      preLoaderRoute: typeof PedidosRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/projetos': {
       id: '/projetos'
       path: '/projetos'
@@ -203,6 +243,8 @@ const rootRouteChildren: RootRouteChildren = {
   EntrarRoute: EntrarRoute,
   FaturasRoute: FaturasRoute,
   InspiracoesRoute: InspiracoesRoute,
+  MarketingRoute: MarketingRoute,
+  PedidosRoute: PedidosRoute,
   ProjetosRoute: ProjetosRoute,
 }
 export const routeTree = rootRouteImport

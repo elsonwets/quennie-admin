@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { Link, useRouterState } from '@tanstack/react-router'
 import { AnimatePresence, motion } from 'motion/react'
-import { CalendarDays, ChevronRight, FolderOpen, Home, Lamp, LayoutGrid, LogOut, Palette, ReceiptText, Users } from 'lucide-react'
+import { CalendarDays, ChevronRight, FolderOpen, Home, Inbox, Lamp, LayoutGrid, LogOut, Megaphone, Palette, ReceiptText, Users } from 'lucide-react'
 import { useWorkspace } from '~/lib/workspace'
 import { useSignOut } from '~/lib/useSignOut'
 import { phaseDot, Wordmark } from './Sidebar'
@@ -9,12 +9,14 @@ import { Avatar, cx } from './ui'
 
 const dock = [
   { to: '/', label: 'Início', icon: Home },
+  { to: '/pedidos', label: 'Pedidos', icon: Inbox },
   { to: '/projetos', label: 'Projetos', icon: FolderOpen },
   { to: '/inspiracoes', label: 'Inspirações', icon: Palette },
-  { to: '/agenda', label: 'Agenda', icon: CalendarDays },
 ] as const
 
 const more = [
+  { to: '/agenda', label: 'Agenda', text: 'Encontros e visitas', icon: CalendarDays },
+  { to: '/marketing', label: 'Marketing', text: 'Campanhas e redes', icon: Megaphone },
   { to: '/clientes', label: 'Clientes', text: 'Contactos e histórico', icon: Users },
   { to: '/biblioteca', label: 'Biblioteca', text: 'Produtos e materiais', icon: Lamp },
   { to: '/faturas', label: 'Faturas', text: 'Faturação e pagamentos', icon: ReceiptText },
@@ -36,6 +38,8 @@ export function MobileBar() {
 /** App-style bottom dock for phones and tablets; the sidebar takes over from lg. */
 export function Dock() {
   const pathname = useRouterState({ select: (s) => s.location.pathname })
+  const { leads } = useWorkspace()
+  const fresh = leads.filter((l) => l.status === 'Novo').length
   const [moreOpen, setMoreOpen] = useState(false)
   const moreActive = more.some((m) => pathname.startsWith(m.to))
 
@@ -52,6 +56,7 @@ export function Dock() {
               <li key={to} className="flex-1">
                 <Link to={to} onClick={() => setMoreOpen(false)} aria-current={active ? 'page' : undefined} className="relative flex h-14 flex-col items-center justify-center gap-1 rounded-[1.35rem] active:scale-95">
                   <DockItem active={active && !moreOpen} icon={<Icon className="size-[1.2rem]" strokeWidth={1.6} />} label={label} />
+                  {to === '/pedidos' && fresh > 0 && <span className="tabular absolute top-1.5 right-[calc(50%-1.1rem)] grid h-4 min-w-4 place-items-center rounded-full bg-cognac px-1 text-[0.6rem] text-marfim">{fresh}</span>}
                 </Link>
               </li>
             )

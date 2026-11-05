@@ -1,5 +1,5 @@
 import type { Tone } from '~/components/ui'
-import type { ClientStatus, InvoiceStatus, ProjectPhase, UsageStatus } from './types'
+import type { ClientStatus, InvoiceStatus, LeadStatus, PostStatus, ProjectPhase, UsageStatus } from './types'
 
 export const phaseTone: Record<ProjectPhase, Tone> = {
   Conceito: 'amber',
@@ -15,3 +15,7 @@ export const usageTone: Record<UsageStatus, Tone> = { Proposto: 'amber', Encomen
 export const clientStatusTone: Record<ClientStatus, Tone> = { Ativo: 'green', Potencial: 'amber', Arquivado: 'neutral' }
 
 export const invoiceTone: Record<InvoiceStatus, Tone> = { Rascunho: 'neutral', Enviada: 'amber', Paga: 'green', 'Em atraso': 'red' }
+
+export const leadStatusTone: Record<LeadStatus, Tone> = { Novo: 'red', Contactado: 'amber', 'Orçamento enviado': 'cognac', Ganho: 'green', Perdido: 'neutral' }
+
+export const postStatusTone: Record<PostStatus, Tone> = { Ideia: 'neutral', Agendado: 'amber', Publicado: 'green' }

@@ -1,4 +1,4 @@
-import type { Appointment, Client, Inspiration, Invoice, Product, Project, Workspace } from '~/lib/types'
+import type { Appointment, Client, Inspiration, Invoice, Lead, Outreach, Product, Project, ProjectPhoto, SocialPost, Workspace } from '~/lib/types'
 
 // Fictional data for design validation only. Dates are relative to today so the
 // agenda and due dates always look current.
@@ -93,6 +93,57 @@ const inspirations: Inspiration[] = [
   { id: 'in16', title: 'Sala de jantar, visão 3D', image: m('7673552471175875858-04'), board: 'Antes e depois', source: 'Obra', tags: ['3D', 'jantar'], palette: ['#71604a', '#928472', '#9e8f7b', '#a99c8d', '#b3a79b'], projectId: 'p3', savedAt: day(-26) },
 ]
 
+const at = (offset: number, hour = 10) => `${day(offset)}T${String(hour).padStart(2, '0')}:15:00.000Z`
+
+// Site photos by stage on two projects, so the gallery and before/after compare have something to show.
+const photo = (id: string, file: string, stage: ProjectPhoto['stage'], offset: number, caption?: string): ProjectPhoto => ({ id, url: `/media/${file}.webp`, stage, takenAt: day(offset), caption })
+const projectPhotos: Record<string, ProjectPhoto[]> = {
+  p1: [
+    photo('ph1', '7673552471175875858-01', 'Antes', -118, 'Sala vazia na primeira visita'),
+    photo('ph2', '7673552471175875858-02', '3D', -90, 'Proposta 3D da sala'),
+    photo('ph3', '7673552471175875858-03', 'Obra', -30, 'Montagem do móvel de TV'),
+    photo('ph4', '7673540222692379911-01', 'Depois', -3, 'Sala de estar'),
+    photo('ph5', '7673540222692379911-04', 'Depois', -3),
+  ],
+  p6: [
+    photo('ph6', '7659460783184547092-01', 'Antes', -280),
+    photo('ph7', '7659460783184547092-06', 'Depois', -40, 'Lounge exterior'),
+    photo('ph8', '7659460783184547092-02', 'Depois', -40, 'Pátio'),
+  ],
+}
+for (const p of projects) if (projectPhotos[p.id]) p.photos = projectPhotos[p.id]
+
+const leads: Lead[] = [
+  { id: 'le1', name: 'Adama Sow', phone: '+221 77 640 22 18', email: 'adama.sow@email.sn', space: 'Casa', services: ['Design de interiores', 'Mobiliário à medida'], country: 'Senegal', city: 'Dakar', timing: 'Nos próximos 3 meses', message: 'Apartamento novo de 3 quartos em Ngor. Gostava de mobiliar a sala e a suite.', source: 'Site', status: 'Novo', receivedAt: at(0, 8) },
+  { id: 'le2', name: 'Nádia Gomes', phone: '+245 955 230 117', space: 'Casa', services: ['Cortinados & estores'], country: 'Guiné-Bissau', city: 'Bissau', timing: 'Assim que possível', preferences: 'Cortinado, linho areia, prega americana. Medidas aproximadas: 320 × 270 cm.', source: 'Site', status: 'Novo', receivedAt: at(-1, 16) },
+  { id: 'le3', name: 'Hotel Kapa', phone: '+245 966 401 900', email: 'direcao@hotelkapa.gw', space: 'Hotel', services: ['Design de interiores', 'Remodelações'], country: 'Guiné-Bissau', city: 'Bubaque', message: 'Renovação de 8 bungalows antes da época alta.', source: 'Instagram', status: 'Contactado', receivedAt: at(-6), nextFollowUp: day(0) },
+  { id: 'le4', name: 'Carla Monteiro', phone: '+351 912 554 870', email: 'carla.monteiro@email.pt', space: 'Casa', services: ['Design de interiores'], country: 'Portugal', city: 'Lisboa', source: 'Recomendação', status: 'Orçamento enviado', receivedAt: at(-14), nextFollowUp: day(2), notes: 'Proposta de 12 M FCFA enviada a ' + day(-8) + '.' },
+  { id: 'le5', name: 'Ibrahima Diallo', phone: '+245 966 778 004', space: 'Escritório', services: ['Mobiliário à medida'], country: 'Guiné-Bissau', city: 'Bissau', source: 'TikTok', status: 'Perdido', receivedAt: at(-30), notes: 'Escolheu mobiliário de catálogo.' },
+]
+
+const outreach: Outreach[] = [
+  { id: 'ou1', recipientKind: 'lead', recipientId: 'le3', channel: 'WhatsApp', text: 'Olá, obrigada pelo seu pedido! Podemos marcar uma visita aos bungalows esta semana?', sentAt: at(-5) },
+  { id: 'ou2', recipientKind: 'lead', recipientId: 'le4', channel: 'Email', text: 'Segue em anexo a proposta para o seu apartamento em Lisboa.', sentAt: at(-8) },
+  { id: 'ou3', recipientKind: 'client', recipientId: 'c6', channel: 'WhatsApp', text: 'Olá Inês, foi um prazer trabalhar na Casa de praia Carvalho. Está tudo como sonhou?', sentAt: at(-35) },
+]
+
+const posts: SocialPost[] = [
+  { id: 'po1', title: 'Antes e depois, sala Djaló', caption: `Antes ➝ depois ✨
+
+Moradia Djaló, Bissau. Deslize para ver a transformação da sala.
+
+Quer transformar o seu espaço? Peça o seu orçamento pelo link na bio.`, hashtags: ['#quennie', '#interiordesign', '#antesedepois', '#bissau'], images: ['/media/7673552471175875858-01.webp', '/media/7673540222692379911-01.webp'], platforms: ['Instagram', 'Facebook'], status: 'Agendado', scheduledFor: day(1), projectId: 'p1' },
+  { id: 'po2', title: 'Bastidores, fábrica', caption: `Bastidores da obra 🛠️
+
+O móvel de TV da Moradia Djaló a sair da nossa fábrica.`, hashtags: ['#quennie', '#mobiliarioamedida', '#bissau'], images: ['/media/7673552471175875858-03.webp'], platforms: ['Instagram', 'TikTok'], status: 'Agendado', scheduledFor: day(4), projectId: 'p1' },
+  { id: 'po3', title: 'Lounge exterior Comporta', caption: `Casa de praia Carvalho ✨
+
+Um exterior pensado para longas tardes de verão.`, hashtags: ['#quennie', '#exteriores', '#comporta'], images: ['/media/7659460783184547092-06.webp'], platforms: ['Instagram'], status: 'Publicado', scheduledFor: day(-10), projectId: 'p6' },
+  { id: 'po4', title: 'Cortinados em linho', caption: `O detalhe faz o espaço.
+
+Linho lavado, prega americana e luz filtrada.`, hashtags: ['#quennie', '#cortinados', '#linho'], images: ['/media/7673555504592948487-frame.webp'], platforms: ['Instagram', 'Estado WhatsApp'], status: 'Ideia' },
+]
+
 export const seed = (): Workspace => ({
   clients: structuredClone(clients),
   projects: structuredClone(projects),
@@ -100,4 +151,9 @@ export const seed = (): Workspace => ({
   invoices: structuredClone(invoices),
   appointments: structuredClone(appointments),
   inspirations: structuredClone(inspirations),
+  leads: structuredClone(leads),
+  // Empty on purpose: the app offers its suggested templates until the studio saves its own.
+  templates: [],
+  outreach: structuredClone(outreach),
+  posts: structuredClone(posts),
 })

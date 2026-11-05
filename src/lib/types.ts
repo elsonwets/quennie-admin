@@ -60,6 +60,19 @@ export interface Project {
   hardDeadline?: string
   contacts?: ProjectContact[]
   kickoff?: KickoffStep[]
+  /** Site photos by stage: the existing space, works in progress, 3D renders, the finished result. */
+  photos?: ProjectPhoto[]
+}
+
+export const PHOTO_STAGES = ['Antes', 'Obra', '3D', 'Depois'] as const
+export type PhotoStage = (typeof PHOTO_STAGES)[number]
+
+export interface ProjectPhoto {
+  id: string
+  url: string
+  stage: PhotoStage
+  caption?: string
+  takenAt: string
 }
 
 export const PROJECT_TYPES = ['Residencial', 'Escritório', 'Hotelaria', 'Restauração', 'Comércio'] as const
@@ -68,7 +81,7 @@ export type ProjectType = (typeof PROJECT_TYPES)[number]
 export const PROJECT_SERVICES = ['Consultoria', 'Projeto 3D', 'Mobiliário à medida', 'Acompanhamento de obra', 'Chave na mão', 'Styling e decoração'] as const
 export type ProjectService = (typeof PROJECT_SERVICES)[number]
 
-export const LEAD_SOURCES = ['Instagram', 'TikTok', 'Recomendação', 'Cliente antigo', 'Site', 'Outro'] as const
+export const LEAD_SOURCES = ['Site', 'Instagram', 'TikTok', 'Facebook', 'WhatsApp', 'Recomendação', 'Cliente antigo', 'Outro'] as const
 export type LeadSource = (typeof LEAD_SOURCES)[number]
 
 export const PROJECT_PRIORITIES = ['Normal', 'Alta', 'Urgente'] as const
@@ -186,6 +199,79 @@ export interface Inspiration {
   savedAt: string
 }
 
+// Prospection ------------------------------------------------------------------
+
+export const LEAD_STATUSES = ['Novo', 'Contactado', 'Orçamento enviado', 'Ganho', 'Perdido'] as const
+export type LeadStatus = (typeof LEAD_STATUSES)[number]
+
+/** A quote or project request: from the public site form, or entered by hand (DM, call). */
+export interface Lead {
+  id: string
+  name: string
+  phone?: string
+  email?: string
+  space?: string
+  services: string[]
+  country?: string
+  city?: string
+  timing?: string
+  message?: string
+  /** Free-text preferences sent by the site (curtain colour, pleat, measurements). */
+  preferences?: string
+  source: LeadSource
+  status: LeadStatus
+  receivedAt: string
+  nextFollowUp?: string
+  clientId?: string
+  projectId?: string
+  notes?: string
+}
+
+export const MESSAGE_CHANNELS = ['WhatsApp', 'Email', 'Ambos'] as const
+export type MessageChannel = (typeof MESSAGE_CHANNELS)[number]
+
+export const TEMPLATE_PURPOSES = ['Resposta a pedido', 'Relance', 'Promoção', 'Novidades', 'Pós-entrega'] as const
+export type TemplatePurpose = (typeof TEMPLATE_PURPOSES)[number]
+
+/** A reusable message. `{nome}`, `{primeiro_nome}`, `{projeto}`, `{cidade}`, `{servicos}` are filled per recipient. */
+export interface MessageTemplate {
+  id: string
+  name: string
+  purpose: TemplatePurpose
+  channel: MessageChannel
+  subject?: string
+  body: string
+}
+
+/** One message sent to one person, kept so the studio knows who was contacted and when. */
+export interface Outreach {
+  id: string
+  recipientKind: 'lead' | 'client'
+  recipientId: string
+  channel: 'WhatsApp' | 'Email'
+  templateId?: string
+  text: string
+  sentAt: string
+}
+
+export const SOCIAL_PLATFORMS = ['Instagram', 'Facebook', 'TikTok', 'Estado WhatsApp'] as const
+export type SocialPlatform = (typeof SOCIAL_PLATFORMS)[number]
+
+export const POST_STATUSES = ['Ideia', 'Agendado', 'Publicado'] as const
+export type PostStatus = (typeof POST_STATUSES)[number]
+
+export interface SocialPost {
+  id: string
+  title: string
+  caption: string
+  hashtags: string[]
+  images: string[]
+  platforms: SocialPlatform[]
+  status: PostStatus
+  scheduledFor?: string
+  projectId?: string
+}
+
 export interface Workspace {
   clients: Client[]
   projects: Project[]
@@ -193,6 +279,10 @@ export interface Workspace {
   invoices: Invoice[]
   appointments: Appointment[]
   inspirations: Inspiration[]
+  leads: Lead[]
+  templates: MessageTemplate[]
+  outreach: Outreach[]
+  posts: SocialPost[]
 }
 
 export type Collection = keyof Workspace

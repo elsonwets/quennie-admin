@@ -44,7 +44,9 @@ const STEPS = [
   { key: 'prazos', label: 'Prazos e equipa', hint: 'Datas, contactos e arranque' },
 ] as const
 
-export function ProjectForm({ project, onClose, onSaved }: { project: Project | 'new' | null; onClose: () => void; onSaved: (id: string) => void }) {
+export type ProjectPrefill = Partial<Omit<Project, 'id'>>
+
+export function ProjectForm({ project, onClose, onSaved, prefill }: { project: Project | 'new' | null; onClose: () => void; onSaved: (id: string) => void; prefill?: ProjectPrefill }) {
   return (
     <Modal
       open={Boolean(project)}
@@ -53,12 +55,12 @@ export function ProjectForm({ project, onClose, onSaved }: { project: Project | 
       description={project === 'new' ? 'O briefing completo do cliente. Só o nome é obrigatório, o resto pode ser completado depois.' : undefined}
       wide
     >
-      {project && <ProjectFormBody key={project === 'new' ? 'new' : project.id} project={project === 'new' ? null : project} onCancel={onClose} onSaved={onSaved} />}
+      {project && <ProjectFormBody key={project === 'new' ? 'new' : project.id} project={project === 'new' ? null : project} prefill={prefill} onCancel={onClose} onSaved={onSaved} />}
     </Modal>
   )
 }
 
-function ProjectFormBody({ project, onCancel, onSaved }: { project: Project | null; onCancel: () => void; onSaved: (id: string) => void }) {
+function ProjectFormBody({ project, prefill, onCancel, onSaved }: { project: Project | null; prefill?: ProjectPrefill; onCancel: () => void; onSaved: (id: string) => void }) {
   const { clients, inspirations } = useWorkspace()
   const { save } = useMutations()
   const [step, setStep] = useState(0)
@@ -90,6 +92,7 @@ function ProjectFormBody({ project, onCancel, onSaved }: { project: Project | nu
       depositRate: 0.3,
       contacts: [],
       kickoff: [],
+      ...prefill,
     },
   )
   const [newClient, setNewClient] = useState<NewClient | null>(clients.length ? null : { name: '', phone: '+245 ', city: 'Bissau', email: '' })
@@ -238,7 +241,7 @@ function ProjectFormBody({ project, onCancel, onSaved }: { project: Project | nu
               <div className="sm:col-span-2">
                 <span className="text-[0.78rem] text-nogueira/70">Capa</span>
                 <div className="scrollbar-none mt-1.5 flex gap-2 overflow-x-auto pb-1">
-                  {[...new Set([form.cover, ...PROJECT_COVERS, ...inspirations.slice(0, 6).map((i) => i.image)])].map((src) => (
+                  {[...new Set([form.cover, ...(form.photos ?? []).map((p) => p.url), ...PROJECT_COVERS, ...inspirations.slice(0, 6).map((i) => i.image)])].map((src) => (
                     <button type="button" key={src} onClick={() => set('cover', src)} aria-pressed={form.cover === src} className={cx('h-14 w-20 shrink-0 overflow-hidden rounded-xl ring-2 transition', form.cover === src ? 'ring-cognac' : 'ring-transparent opacity-70 hover:opacity-100')}>
                       <img src={src} alt="" className="size-full object-cover" />
                     </button>

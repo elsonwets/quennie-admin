@@ -7,7 +7,8 @@ import { getSupabaseServerClient } from './supabase'
 // as JSON in `data`. Every call runs with the signed-in user's session, so the database's
 // row-level security decides what can be read or written, on top of requireUser().
 
-const COLLECTIONS: Collection[] = ['clients', 'projects', 'products', 'invoices', 'appointments', 'inspirations']
+const COLLECTIONS: Collection[] = ['clients', 'projects', 'products', 'invoices', 'appointments', 'inspirations', 'leads', 'templates', 'outreach', 'posts']
+const LATER_COLLECTIONS: Collection[] = ['leads', 'templates', 'outreach', 'posts']
 const BUCKET = 'media'
 const PHOTO_FIELDS = ['image', 'cover'] as const
 
@@ -37,12 +38,26 @@ const storedPath = (url: unknown) => {
   return typeof url === 'string' && url.includes(marker) ? url.slice(url.indexOf(marker) + marker.length) : null
 }
 
+/** Every uploaded file a record points to: cover/image, project photos. Post images are shared, so they stay. */
+const recordPaths = (data: Record<string, unknown> | undefined) => {
+  if (!data) return []
+  const urls: unknown[] = PHOTO_FIELDS.map((f) => data[f])
+  if (Array.isArray(data.photos)) for (const p of data.photos) urls.push((p as { url?: unknown })?.url)
+  return [...new Set(urls.map(storedPath).filter((p): p is string => Boolean(p)))]
+}
+
 export const getWorkspace = createServerFn({ method: 'GET' }).handler(async (): Promise<Workspace> => {
   await requireUser()
   const db = getSupabaseServerClient()
   const results = await Promise.all(COLLECTIONS.map((c) => db.from(c).select('id, data').order('created_at', { ascending: false })))
   const workspace = {} as Record<Collection, unknown[]>
   results.forEach(({ data, error }, i) => {
+    // Tables added after the first install stay empty until setup.sql is run again.
+    if (error && LATER_COLLECTIONS.includes(COLLECTIONS[i]) && (error.code === 'PGRST205' || error.code === '42P01')) {
+      console.warn(`Tabela ${COLLECTIONS[i]} em falta: volte a correr supabase/setup.sql`)
+      workspace[COLLECTIONS[i]] = []
+      return
+    }
     if (error) throw new Error(`Não foi possível ler ${COLLECTIONS[i]}: ${error.message}`)
     workspace[COLLECTIONS[i]] = (data as Row[]).map((row) => ({ ...row.data, id: row.id }))
   })
@@ -84,7 +99,33 @@ export const deleteRecord = createServerFn({ method: 'POST' })
     if (error) throw new Error(`Não foi possível eliminar: ${error.message}`)
 
     // Photos uploaded from the app go with their record; studio and demo images stay.
-    const paths = PHOTO_FIELDS.map((f) => storedPath((removed as Row | null)?.data?.[f])).filter((p): p is string => Boolean(p))
+    const paths = recordPaths((removed as Row | null)?.data)
     if (paths.length) await db.storage.from(BUCKET).remove(paths)
+    return { ok: true }
+  })
+
+/** One photo per request, so a gallery of several shots never hits the request size limit. */
+export const uploadMedia = createServerFn({ method: 'POST' })
+  .validator((input: unknown) => {
+    const { dataUrl } = (input ?? {}) as { dataUrl?: unknown }
+    if (typeof dataUrl !== 'string' || !dataUrl.startsWith('data:image/')) throw new Error('Imagem inválida')
+    return { dataUrl }
+  })
+  .handler(async ({ data: input }) => {
+    await requireUser()
+    return { url: await uploadPhoto(getSupabaseServerClient(), input.dataUrl) }
+  })
+
+/** Removes a file uploaded from the app. Studio and demo images (not in the bucket) are left alone. */
+export const removeMedia = createServerFn({ method: 'POST' })
+  .validator((input: unknown) => {
+    const { url } = (input ?? {}) as { url?: unknown }
+    if (typeof url !== 'string') throw new Error('Endereço inválido')
+    return { url }
+  })
+  .handler(async ({ data: input }) => {
+    await requireUser()
+    const path = storedPath(input.url)
+    if (path) await getSupabaseServerClient().storage.from(BUCKET).remove([path])
     return { ok: true }
   })

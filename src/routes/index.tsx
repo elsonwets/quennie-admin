@@ -1,9 +1,11 @@
 import { Link, createFileRoute } from '@tanstack/react-router'
 import type React from 'react'
-import { ArrowRight, ArrowUpRight, CalendarDays, Camera, MapPin, Package } from 'lucide-react'
+import { ArrowRight, ArrowUpRight, BellRing, CalendarDays, Camera, Globe, Inbox, MapPin, Megaphone, MessageCircle, Package } from 'lucide-react'
 import { CURRENCY, addDays, amountShort, daysBetween, invoiceTotal, longDate, money, shortDate, todayIso, weekday } from '~/lib/format'
-import { invoiceTone } from '~/lib/tones'
-import { PROJECT_PHASES, type Project } from '~/lib/types'
+import { invoiceTone, leadStatusTone, postStatusTone } from '~/lib/tones'
+import { ago, needsFollowUp } from '~/lib/leads'
+import { fillTemplate, recipientFromLead, templatesOf, useSendMessage } from '~/lib/outreach'
+import { PROJECT_PHASES, type Lead, type Project } from '~/lib/types'
 import { useWorkspace } from '~/lib/workspace'
 import { Avatar, Badge, Card, PaletteStrip, Progress, cx } from '~/components/ui'
 import { EventCard } from '~/components/EventCard'
@@ -25,7 +27,7 @@ const rise = (i: number) => ({ className: 'rise', style: { '--i': i } as React.C
 const plural = (n: number, one: string, many: string) => `${n} ${n === 1 ? one : many}`
 
 function HomePage() {
-  const { projects, clients, invoices, appointments, products, inspirations } = useWorkspace()
+  const { projects, clients, invoices, appointments, products, inspirations, leads, posts } = useWorkspace()
   const today = todayIso()
   const monthAgo = addDays(today, -30)
 
@@ -42,10 +44,22 @@ function HomePage() {
   const clientName = (id?: string) => clients.find((c) => c.id === id)?.name
   const activeBudget = active.reduce((s, p) => s + p.budget, 0)
   const activeSpent = active.reduce((s, p) => s + p.spent, 0)
+  const freshLeads = leads.filter((l) => l.status === 'Novo')
+  // New requests first, then the open ones whose follow-up date has come.
+  const inbox = leads
+    .filter((l) => l.status === 'Novo' || needsFollowUp(l, today))
+    .sort((a, b) => Number(b.status === 'Novo') - Number(a.status === 'Novo') || b.receivedAt.localeCompare(a.receivedAt))
+    .slice(0, 5)
+  const followUps = leads.filter((l) => l.status !== 'Novo' && needsFollowUp(l, today)).length
+  const weekPosts = posts
+    .filter((p) => p.status === 'Agendado' && p.scheduledFor && p.scheduledFor >= today && p.scheduledFor <= addDays(today, 7))
+    .sort((a, b) => (a.scheduledFor ?? '').localeCompare(b.scheduledFor ?? ''))
   const recentInspirations = [...inspirations].sort((a, b) => b.savedAt.localeCompare(a.savedAt)).slice(0, 6)
 
   // The day in one sentence: only what needs attention, nothing when all is calm.
   const brief = [
+    freshLeads.length > 0 && plural(freshLeads.length, 'pedido novo por responder', 'pedidos novos por responder'),
+    followUps > 0 && plural(followUps, 'pedido a relançar', 'pedidos a relançar'),
     todayCount > 0 && plural(todayCount, 'encontro hoje', 'encontros hoje'),
     deliveriesThisWeek > 0 && plural(deliveriesThisWeek, 'entrega esta semana', 'entregas esta semana'),
     late.length > 0 && plural(late.length, 'fatura em atraso', 'faturas em atraso'),
@@ -116,6 +130,52 @@ function HomePage() {
           ))}
         </Card>
       </section>
+
+      <div className="grid grid-cols-1 items-start gap-8 xl:grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)]">
+        <section aria-labelledby="leads-title">
+          <SectionTitle id="leads-title" title="Pedidos a responder" to="/pedidos" link="Todos os pedidos" />
+          <Card className="divide-y divide-linha/70 px-4 sm:px-5">
+            {inbox.length === 0 ? (
+              <p className="flex items-center justify-center gap-2 py-8 text-[0.86rem] text-taupe">
+                <Inbox className="size-4" /> Todos os pedidos respondidos.
+              </p>
+            ) : (
+              inbox.map((lead) => <LeadRow key={lead.id} lead={lead} />)
+            )}
+          </Card>
+        </section>
+
+        <section aria-labelledby="posts-title">
+          <SectionTitle id="posts-title" title="Redes esta semana" to="/marketing" link="Marketing" />
+          <Card className="p-4 sm:p-5">
+            {weekPosts.length === 0 ? (
+              <div className="flex flex-col items-center gap-3 py-5 text-center">
+                <Megaphone className="size-5 text-taupe" strokeWidth={1.6} />
+                <p className="max-w-xs text-[0.86rem] text-taupe">Nada agendado. Uma foto de obra ou um antes e depois mantém o Instagram vivo.</p>
+                <Link to="/marketing" search={{ tab: 'redes' }} className="text-[0.82rem] text-cognac-deep underline decoration-linha underline-offset-4">
+                  Preparar uma publicação
+                </Link>
+              </div>
+            ) : (
+              <ul className="grid grid-cols-2 gap-3 sm:grid-cols-4 xl:grid-cols-2">
+                {weekPosts.slice(0, 4).map((post) => (
+                  <li key={post.id}>
+                    <Link to="/marketing" search={{ tab: 'redes' }} className="group block">
+                      <span className="relative block aspect-square overflow-hidden rounded-xl bg-linho">
+                        {post.images[0] && <img src={post.images[0]} alt="" loading="lazy" className="size-full object-cover transition-transform duration-700 group-hover:scale-[1.04]" />}
+                        <Badge tone={postStatusTone[post.status]} className="absolute top-2 left-2 bg-white/90">
+                          {post.scheduledFor === today ? 'Hoje' : weekday(post.scheduledFor ?? today)}
+                        </Badge>
+                      </span>
+                      <span className="mt-1.5 block truncate text-[0.8rem]">{post.title}</span>
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </Card>
+        </section>
+      </div>
 
       <section aria-labelledby="pipeline-title">
         <SectionTitle id="pipeline-title" title="Estúdio por fase" to="/projetos" link="Todos os projetos" />
@@ -370,7 +430,50 @@ function PhaseBoard({ projects, clientName }: { projects: Project[]; clientName:
   )
 }
 
-function SectionTitle({ id, title, to, link }: { id: string; title: string; to: '/agenda' | '/projetos' | '/faturas' | '/biblioteca' | '/inspiracoes'; link: string }) {
+/** A request waiting for an answer, with the suggested reply one tap away. */
+function LeadRow({ lead }: { lead: Lead }) {
+  const workspace = useWorkspace()
+  const send = useSendMessage()
+  const template = templatesOf(workspace).find((t) => t.purpose === (lead.status === 'Novo' ? 'Resposta a pedido' : 'Relance'))
+  const recipient = recipientFromLead(lead, workspace.projects)
+  return (
+    <div className="flex items-center gap-3 py-3">
+      <Link to="/pedidos" search={{ id: lead.id }} className="flex min-w-0 flex-1 items-center gap-3">
+        <Avatar name={lead.name} size="sm" />
+        <span className="min-w-0 flex-1">
+          <span className="flex items-center gap-1.5 text-[0.88rem]">
+            <span className="truncate">{lead.name}</span>
+            {lead.source === 'Site' && <Globe className="size-3 shrink-0 text-taupe" />}
+          </span>
+          {lead.status === 'Novo' ? (
+            <span className="block truncate text-[0.74rem] text-taupe">
+              {lead.services.join(', ') || lead.space || 'Pedido'} · {ago(lead.receivedAt)}
+            </span>
+          ) : (
+            <span className="flex items-center gap-1 truncate text-[0.74rem] text-[#9b3424]">
+              <BellRing className="size-3 shrink-0" /> Relançar · {lead.status.toLowerCase()}
+            </span>
+          )}
+        </span>
+        <Badge tone={leadStatusTone[lead.status]} className="hidden sm:inline-flex">
+          {lead.status}
+        </Badge>
+      </Link>
+      {lead.phone && template && (
+        <button
+          onClick={() => send(recipient, 'WhatsApp', fillTemplate(template.body, recipient), { templateId: template.id })}
+          aria-label={`Responder a ${lead.name} no WhatsApp`}
+          title="Responder no WhatsApp"
+          className="grid size-9 shrink-0 place-items-center rounded-full bg-palma text-marfim transition hover:brightness-95"
+        >
+          <MessageCircle className="size-4" />
+        </button>
+      )}
+    </div>
+  )
+}
+
+function SectionTitle({ id, title, to, link }: { id: string; title: string; to: '/agenda' | '/projetos' | '/faturas' | '/biblioteca' | '/inspiracoes' | '/pedidos' | '/marketing'; link: string }) {
   return (
     <div className="mb-3.5 flex items-baseline justify-between gap-4 px-1">
       <h2 id={id} className="display text-[1.65rem] sm:text-[1.8rem]">

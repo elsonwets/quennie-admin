@@ -8,6 +8,8 @@ import type { Client, ClientStatus, ClientType } from '~/lib/types'
 import { useMutations, useWorkspace } from '~/lib/workspace'
 import { Avatar, Badge, Button, ConfirmDelete, DetailPanel, EmptyState, Field, IconButton, Modal, PageHeader, Tabs, cx } from '~/components/ui'
 import { clientStatusTone as statusTone, phaseTone } from '~/lib/tones'
+import { normalizePhone, recipientFromClient } from '~/lib/outreach'
+import { ContactHistory, QuickMessage } from '~/components/QuickMessage'
 
 export const Route = createFileRoute('/clientes')({
   validateSearch: validateIdSearch,
@@ -163,7 +165,7 @@ function ClientDetail({ client, billed, onEdit, onDelete }: { client: Client; bi
   const clientProjects = projects.filter((p) => p.clientId === client.id)
   const outstanding = invoices.filter((i) => i.clientId === client.id && (i.status === 'Enviada' || i.status === 'Em atraso')).reduce((s, i) => s + invoiceTotal(i), 0)
   const next = appointments.filter((a) => a.clientId === client.id && a.date >= todayIso()).sort((a, b) => (a.date + a.start).localeCompare(b.date + b.start))[0]
-  const whatsapp = `https://wa.me/${client.phone.replace(/\D/g, '')}`
+  const whatsapp = `https://wa.me/${normalizePhone(client.phone)}`
 
   return (
     <motion.div key={client.id} initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="px-1.5 pt-2">
@@ -232,6 +234,11 @@ function ClientDetail({ client, billed, onEdit, onDelete }: { client: Client; bi
       </dl>
 
       {client.notes && <p className="mt-4 rounded-2xl bg-[#f4ead9]/60 px-4 py-3 text-[0.84rem] leading-relaxed text-nogueira/85">{client.notes}</p>}
+
+      <div className="mt-4">
+        <QuickMessage recipient={recipientFromClient(client, projects)} purpose={client.status === 'Potencial' ? 'Relance' : 'Novidades'} />
+      </div>
+      <ContactHistory kind="client" id={client.id} className="mt-4" />
 
       <div className="mt-4 border-t border-linha pt-4 pb-1">
         <p className="text-[0.8rem] text-taupe">Projetos</p>
