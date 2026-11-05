@@ -1,10 +1,11 @@
 import { useState } from 'react'
 import { Link, useRouterState } from '@tanstack/react-router'
 import { AnimatePresence, motion } from 'motion/react'
-import { CalendarDays, ChevronRight, FolderOpen, Home, Inbox, Lamp, LayoutGrid, LogOut, Megaphone, Palette, ReceiptText, Users } from 'lucide-react'
+import { CalendarDays, FolderOpen, Home, Inbox, Lamp, LayoutGrid, LogOut, Megaphone, Palette, ReceiptText, Users } from 'lucide-react'
 import { useWorkspace } from '~/lib/workspace'
 import { useSignOut } from '~/lib/useSignOut'
-import { phaseDot, Wordmark } from './Sidebar'
+import { Wordmark } from './Sidebar'
+import { InstallApp } from './InstallApp'
 import { Avatar, cx } from './ui'
 
 const dock = [
@@ -95,9 +96,7 @@ function DockItem({ active, icon, label }: { active: boolean; icon: React.ReactN
 }
 
 function MoreSheet({ open, onClose }: { open: boolean; onClose: () => void }) {
-  const { projects, clients } = useWorkspace()
   const signOut = useSignOut()
-  const active = projects.filter((p) => p.phase !== 'Concluído' && p.phase !== 'Conceito').slice(0, 4)
 
   return (
     <AnimatePresence>
@@ -115,7 +114,8 @@ function MoreSheet({ open, onClose }: { open: boolean; onClose: () => void }) {
             animate={{ y: 0, opacity: 1 }}
             exit={{ y: 30, opacity: 0 }}
             transition={{ duration: 0.4, ease: [0.65, 0, 0.18, 1] }}
-            className="fixed inset-x-3 bottom-[calc(max(0.75rem,env(safe-area-inset-bottom))+5.5rem)] z-20 mx-auto max-w-md overflow-hidden rounded-[1.75rem] bg-marfim p-3 shadow-2xl ring-1 ring-linha lg:hidden"
+            // Never taller than what the browser leaves visible above the dock (dvh follows its bars).
+            className="fixed inset-x-3 bottom-[calc(max(0.75rem,env(safe-area-inset-bottom))+5.5rem)] z-20 mx-auto max-h-[calc(100dvh-max(0.75rem,env(safe-area-inset-bottom))-7rem)] max-w-md overflow-y-auto overscroll-contain rounded-[1.75rem] bg-marfim p-3 shadow-2xl ring-1 ring-linha lg:hidden"
           >
             <div className="grid grid-cols-3 gap-2">
               {more.map(({ to, label, text, icon: Icon }) => (
@@ -129,25 +129,9 @@ function MoreSheet({ open, onClose }: { open: boolean; onClose: () => void }) {
               ))}
             </div>
 
-            <p className="mt-4 mb-1 px-2 text-[0.72rem] text-taupe">Projetos ativos</p>
-            <ul>
-              {active.map((p) => (
-                <li key={p.id}>
-                  <Link to="/projetos" search={{ id: p.id }} onClick={onClose} className="flex items-center gap-3 rounded-xl px-2 py-2 active:bg-linho/60">
-                    <span className={cx('size-1.5 shrink-0 rounded-full', phaseDot[p.phase] ?? 'bg-taupe')} />
-                    <span className="min-w-0 flex-1">
-                      <span className="block truncate text-[0.86rem]">{p.name}</span>
-                      <span className="block text-[0.7rem] text-taupe">
-                        {p.phase} · {clients.find((c) => c.id === p.clientId)?.city}
-                      </span>
-                    </span>
-                    <ChevronRight className="size-4 text-taupe" />
-                  </Link>
-                </li>
-              ))}
-            </ul>
+            <InstallApp className="mt-2 w-full" onDone={onClose} />
 
-            <div className="mt-2 flex items-center gap-3 border-t border-linha px-2 pt-3">
+            <div className="mt-3 flex items-center gap-3 border-t border-linha px-2 pt-3">
               <Avatar name="Quennie Melissa" size="sm" />
               <div className="min-w-0 flex-1 leading-tight">
                 <p className="truncate text-[0.84rem]">Quennie Melissa</p>

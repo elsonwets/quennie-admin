@@ -4,6 +4,7 @@ import { Eye, EyeOff, LoaderCircle, Lock, User } from 'lucide-react'
 import { signIn } from '~/server/auth'
 import { forgetUser } from '~/lib/session'
 import { Wordmark } from '~/components/Sidebar'
+import { InstallApp } from '~/components/InstallApp'
 
 export const Route = createFileRoute('/entrar')({
   // Only same-site paths: an outside URL here would turn the login page into an open redirect.
@@ -126,6 +127,8 @@ function LoginPage() {
               {busy ? 'A entrar…' : 'Entrar'}
             </button>
           </form>
+
+          <InstallApp className="mt-8 w-full lg:hidden" />
 
           <p className="mt-10 text-center text-[0.76rem] text-taupe">Sem acesso? Peça uma conta à administração do estúdio.</p>
         </div>
