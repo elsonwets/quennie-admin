@@ -337,16 +337,16 @@ function FeaturedProject({ project, clientName }: { project: Project; clientName
         <dl className="mt-6 grid grid-cols-3 gap-3 border-t border-linha pt-5">
           <div>
             <dt className="text-[0.72rem] text-taupe">Progresso</dt>
-            <dd className="display tabular mt-1 text-[1.9rem]">{project.progress}%</dd>
+            <dd className="display tabular mt-1 text-[1.55rem] min-[380px]:text-[1.9rem]">{project.progress}%</dd>
           </div>
           <div>
             <dt className="text-[0.72rem] text-taupe">Orçamento usado</dt>
-            <dd className={cx('display tabular mt-1 text-[1.9rem]', spentPct > 100 && 'text-[#9b3424]')}>{spentPct}%</dd>
+            <dd className={cx('display tabular mt-1 text-[1.55rem] min-[380px]:text-[1.9rem]', spentPct > 100 && 'text-[#9b3424]')}>{spentPct}%</dd>
           </div>
           <div>
             <dt className="text-[0.72rem] text-taupe">Orçamento</dt>
-            <dd className="mt-1 flex items-baseline gap-1">
-              <span className="display tabular text-[1.9rem]">{amountShort(project.budget)}</span>
+            <dd className="mt-1 flex flex-wrap items-baseline gap-x-1">
+              <span className="display tabular text-[1.55rem] min-[380px]:text-[1.9rem]">{amountShort(project.budget)}</span>
               <span className="text-[0.66rem] text-taupe">{CURRENCY}</span>
             </dd>
           </div>

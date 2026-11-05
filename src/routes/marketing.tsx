@@ -298,7 +298,7 @@ function Templates() {
         <p className="max-w-xl text-[0.84rem] text-taupe">
           {suggested ? 'Modelos sugeridos para começar. Edite-os à sua maneira: ficam guardados como seus.' : 'As suas mensagens prontas a enviar. Use as variáveis para personalizar cada envio.'}
         </p>
-        <div className="flex gap-2">
+        <div className="flex flex-wrap gap-2">
           {suggested && (
             <Button
               variant="secondary"
