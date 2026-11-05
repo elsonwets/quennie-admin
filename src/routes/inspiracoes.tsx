@@ -230,7 +230,7 @@ function InspirationView({ item, onFavorite, onEdit, onDelete }: { item: Inspira
   }
 
   return (
-    <div className="grid gap-6 md:grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)]">
+    <div className="grid grid-cols-1 gap-6 md:grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)]">
       <div className="overflow-hidden rounded-[1.1rem] bg-linho">
         <img src={item.image} alt={item.title} className="mx-auto max-h-[62dvh] w-full object-contain" />
       </div>
@@ -379,7 +379,7 @@ function InspirationForm({
         await onSave({ ...form, title: form.title.trim() || 'Sem título', board: form.board.trim() || 'Geral', tags: tags.split(',').map((t) => t.trim()).filter(Boolean) })
         setBusy(false)
       }}
-      className="grid gap-5 md:grid-cols-[minmax(0,0.9fr)_minmax(0,1fr)]"
+      className="grid grid-cols-1 gap-5 md:grid-cols-[minmax(0,0.9fr)_minmax(0,1fr)]"
     >
       <div className="flex flex-col gap-3">
         <div className="relative grid aspect-[4/5] place-items-center overflow-hidden rounded-[1.1rem] bg-linho ring-1 ring-linha">
@@ -428,7 +428,7 @@ function InspirationForm({
           <input className="field" value={form.title} onChange={(e) => set('title', e.target.value)} placeholder="Ex.: Hall em ripado de carvalho" />
         </Field>
 
-        <div className="grid gap-4 sm:grid-cols-2">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <Field label="Coleção" hint="Escreva um nome novo para criar outra">
             <input className="field" list="inspiration-boards" value={form.board} onChange={(e) => set('board', e.target.value)} />
             <datalist id="inspiration-boards">

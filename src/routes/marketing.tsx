@@ -129,7 +129,7 @@ function Campaigns() {
   }
 
   return (
-    <div className="grid items-start gap-6 xl:grid-cols-[400px_minmax(0,1fr)]">
+    <div className="grid grid-cols-1 items-start gap-6 xl:grid-cols-[400px_minmax(0,1fr)]">
       <Card className="flex flex-col gap-5 p-5">
         <div>
           <p className="display text-[1.5rem]">1. Para quem</p>
@@ -318,7 +318,7 @@ function Templates() {
         </div>
       </div>
 
-      <ul className="grid gap-4 md:grid-cols-2 2xl:grid-cols-3">
+      <ul className="grid grid-cols-1 gap-4 md:grid-cols-2 2xl:grid-cols-3">
         {templates.map((t, i) => (
           <motion.li key={t.id} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0, transition: { delay: i * 0.03 } }}>
             <Card className="flex h-full flex-col p-5">
@@ -383,7 +383,7 @@ function TemplateForm({ template, onCancel, onSave }: { template: MessageTemplat
         await onSave(form)
         setBusy(false)
       }}
-      className="grid gap-4 sm:grid-cols-2"
+      className="grid grid-cols-1 gap-4 sm:grid-cols-2"
     >
       <Field label="Nome do modelo" className="sm:col-span-2">
         <input required className="field" value={form.name} onChange={(e) => set('name', e.target.value)} placeholder="Ex.: Promoção de cortinados" />
@@ -505,7 +505,7 @@ function SocialStudio({ projectId, photo, onConsumed }: { projectId?: string; ph
           .map((g) => (
             <section key={g.title}>
               <h2 className="display mb-3 px-1 text-[1.6rem]">{g.title}</h2>
-              <ul className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
+              <ul className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
                 {g.items.map((post) => (
                   <li key={post.id}>
                     <PostCard post={post} onEdit={() => setEditing(post)} onDelete={() => setDeleting(post)} onPublished={() => save('posts', { ...post, status: 'Publicado', scheduledFor: post.scheduledFor ?? today }, 'Marcada como publicada')} />
@@ -685,7 +685,7 @@ function PostForm({ draft, onCancel, onSave }: { draft: PostDraft; onCancel: () 
         await onSave({ ...form, hashtags, status: form.status === 'Ideia' && form.scheduledFor ? 'Agendado' : form.status })
         setBusy(false)
       }}
-      className="grid gap-4 sm:grid-cols-2"
+      className="grid grid-cols-1 gap-4 sm:grid-cols-2"
     >
       <Field label="Título interno">
         <input className="field" value={form.title} onChange={(e) => set('title', e.target.value)} placeholder="Ex.: Antes e depois sala Djaló" />

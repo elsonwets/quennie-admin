@@ -43,7 +43,7 @@ function LoginPage() {
   }
 
   return (
-    <div className="grid min-h-dvh bg-marfim lg:grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)]">
+    <div className="grid grid-cols-1 min-h-dvh bg-marfim lg:grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)]">
       {/* Her own work sets the tone before anything is typed. */}
       <aside className="relative h-[34dvh] min-h-56 overflow-hidden bg-nogueira lg:h-auto">
         <img src="/media/hero-interior.jpg" alt="" className="rise absolute inset-0 size-full object-cover opacity-90" />

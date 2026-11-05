@@ -240,7 +240,7 @@ function AppointmentForm({
           <input type="time" className="field tabular px-2" value={form.end} onChange={(e) => set('end', e.target.value)} />
         </Field>
       </div>
-      <div className="grid gap-3 sm:grid-cols-2">
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
         <Field label="Cliente">
           <select className="field" value={form.clientId ?? ''} onChange={(e) => set('clientId', e.target.value || undefined)}>
             <option value="">Nenhum</option>

@@ -74,7 +74,7 @@ function ClientsPage() {
         </div>
       </div>
 
-      <div className="grid items-start gap-6 xl:grid-cols-[minmax(0,1fr)_360px]">
+      <div className="grid grid-cols-1 items-start gap-6 xl:grid-cols-[minmax(0,1fr)_360px]">
         {visible.length === 0 ? (
           <EmptyState icon={<Users className="size-5" />} title="Nenhum cliente" text="Ajuste o filtro ou adicione um novo cliente." />
         ) : (
@@ -280,7 +280,7 @@ function ClientForm({ client, onCancel, onSave }: { client: Client | null; onCan
         await onSave(form)
         setBusy(false)
       }}
-      className="grid gap-4 sm:grid-cols-2"
+      className="grid grid-cols-1 gap-4 sm:grid-cols-2"
     >
       <Field label="Nome completo">
         <input required className="field" value={form.name} onChange={(e) => set('name', e.target.value)} />

@@ -107,7 +107,7 @@ function LibraryPage() {
         </p>
       )}
 
-      <div className="grid items-start gap-6 xl:grid-cols-[minmax(0,1fr)_330px] 2xl:grid-cols-[minmax(0,1fr)_360px]">
+      <div className="grid grid-cols-1 items-start gap-6 xl:grid-cols-[minmax(0,1fr)_330px] 2xl:grid-cols-[minmax(0,1fr)_360px]">
         {visible.length === 0 ? (
           <EmptyState icon={<Lamp className="size-5" />} title="Sem produtos" text="Ainda não há produtos nesta categoria." action={<Button onClick={() => setEditing('new')}>Adicionar produto</Button>} />
         ) : (
@@ -320,7 +320,7 @@ function ProductFormBody({ initial, onCancel, onSave }: { initial: Omit<Product,
         await onSave(form)
         setBusy(false)
       }}
-      className="grid gap-4 sm:grid-cols-2"
+      className="grid grid-cols-1 gap-4 sm:grid-cols-2"
     >
       <div className="sm:col-span-2">
         <span className="text-[0.78rem] text-nogueira/70">Imagem</span>

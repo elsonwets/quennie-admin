@@ -114,7 +114,7 @@ function LeadsPage() {
         </div>
       </div>
 
-      <div className="grid items-start gap-6 xl:grid-cols-[minmax(0,1fr)_380px]">
+      <div className="grid grid-cols-1 items-start gap-6 xl:grid-cols-[minmax(0,1fr)_380px]">
         {visible.length === 0 ? (
           <EmptyState
             icon={<Inbox className="size-5" />}
@@ -358,7 +358,7 @@ function LeadForm({ lead, onCancel, onSave }: { lead: Lead | null; onCancel: () 
         await onSave({ ...form, name: form.name.trim(), phone: form.phone?.trim() || undefined, email: form.email?.trim() || undefined })
         setBusy(false)
       }}
-      className="grid gap-4 sm:grid-cols-2"
+      className="grid grid-cols-1 gap-4 sm:grid-cols-2"
     >
       <Field label="Nome">
         <input required className="field" value={form.name} onChange={(e) => set('name', e.target.value)} />

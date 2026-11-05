@@ -68,7 +68,7 @@ function InvoicesPage() {
         items={[{ value: 'all' as const, label: 'Todas', count: invoices.length }, ...STATUSES.map((s) => ({ value: s, label: s, count: invoices.filter((i) => i.status === s).length }))]}
       />
 
-      <div className="grid items-start gap-6 xl:grid-cols-[minmax(0,1fr)_380px]">
+      <div className="grid grid-cols-1 items-start gap-6 xl:grid-cols-[minmax(0,1fr)_380px]">
         {visible.length === 0 ? (
           <EmptyState icon={<ReceiptText className="size-5" />} title="Nenhuma fatura" text="Não há faturas com este estado." />
         ) : (
@@ -330,7 +330,7 @@ function InvoiceForm({ invoice, number, onCancel, onSave }: { invoice: Invoice |
         await onSave({ ...form, lines: form.lines.filter((l) => l.description.trim()) })
         setBusy(false)
       }}
-      className="grid gap-4 sm:grid-cols-2"
+      className="grid grid-cols-1 gap-4 sm:grid-cols-2"
     >
       <Field label="Cliente">
         <select

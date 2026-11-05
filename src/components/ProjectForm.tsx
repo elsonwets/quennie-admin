@@ -173,7 +173,7 @@ function ProjectFormBody({ project, prefill, onCancel, onSaved }: { project: Pro
           animate={{ opacity: 1, x: 0 }}
           exit={{ opacity: 0, x: -12 }}
           transition={{ duration: 0.25, ease: [0.65, 0, 0.18, 1] }}
-          className="grid gap-5 pt-6 pb-4 sm:grid-cols-2"
+          className="grid grid-cols-1 gap-5 pt-6 pb-4 sm:grid-cols-2"
         >
           {step === 0 && (
             <>
@@ -192,7 +192,7 @@ function ProjectFormBody({ project, prefill, onCancel, onSaved }: { project: Pro
                   )}
                 </div>
                 {newClient ? (
-                  <div className="grid gap-2 rounded-2xl bg-linho/50 p-3 sm:grid-cols-2">
+                  <div className="grid grid-cols-1 gap-2 rounded-2xl bg-linho/50 p-3 sm:grid-cols-2">
                     <input aria-label="Nome do cliente" className="field" placeholder="Nome completo" value={newClient.name} onChange={(e) => setNewClient({ ...newClient, name: e.target.value })} />
                     <input aria-label="Telefone" type="tel" className="field" placeholder="+245 …" value={newClient.phone} onChange={(e) => setNewClient({ ...newClient, phone: e.target.value })} />
                     <input aria-label="Email" type="email" className="field" placeholder="email@exemplo.com" value={newClient.email} onChange={(e) => setNewClient({ ...newClient, email: e.target.value })} />
@@ -471,7 +471,7 @@ function ProjectFormBody({ project, prefill, onCancel, onSaved }: { project: Pro
                     {(form.kickoff ?? []).length} de {KICKOFF_STEPS.length}
                   </span>
                 </span>
-                <ol className="grid gap-1.5 sm:grid-cols-2">
+                <ol className="grid grid-cols-1 gap-1.5 sm:grid-cols-2">
                   {KICKOFF_STEPS.map((k, i) => {
                     const done = (form.kickoff ?? []).includes(k)
                     return (

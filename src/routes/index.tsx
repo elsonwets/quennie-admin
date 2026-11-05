@@ -191,7 +191,7 @@ function HomePage() {
             ) : (
               <div className="flex flex-col gap-5">
                 {days.map((d) => (
-                  <div key={d} className="grid gap-3 sm:grid-cols-[4.5rem_1fr]">
+                  <div key={d} className="grid grid-cols-1 gap-3 sm:grid-cols-[4.5rem_1fr]">
                     <div className="flex items-baseline gap-2 sm:flex-col sm:gap-0">
                       <span className={cx('text-[0.72rem] capitalize', d === today ? 'text-cognac' : 'text-taupe')}>{d === today ? 'Hoje' : weekday(d)}</span>
                       <span className="display text-[1.9rem] leading-none">{Number(d.slice(8))}</span>

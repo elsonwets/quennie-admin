@@ -55,11 +55,11 @@ function ProjectsPage() {
         ]}
       />
 
-      <div className="grid items-start gap-6 xl:grid-cols-[minmax(0,1fr)_360px]">
+      <div className="grid grid-cols-1 items-start gap-6 xl:grid-cols-[minmax(0,1fr)_360px]">
         {visible.length === 0 ? (
           <EmptyState icon={<FolderOpen className="size-5" />} title="Nenhum projeto" text="Não há projetos nesta fase." action={<Button onClick={() => setEditing('new')}>Novo projeto</Button>} />
         ) : (
-          <ul className="grid gap-4 sm:grid-cols-2 2xl:grid-cols-3">
+          <ul className="grid grid-cols-1 gap-4 sm:grid-cols-2 2xl:grid-cols-3">
             <AnimatePresence initial={false}>
               {visible.map((project, index) => {
                 const client = clients.find((c) => c.id === project.clientId)
